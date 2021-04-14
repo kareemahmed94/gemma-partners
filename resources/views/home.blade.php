@@ -5,21 +5,25 @@
         #map img {
             max-width: none !important;
         }
-        .gm-style .gm-style-iw-d{
+
+        .gm-style .gm-style-iw-d {
             overflow: hidden !important;
         }
-        .gm-style .gm-style-iw-c{
+
+        .gm-style .gm-style-iw-c {
             padding-right: 20px !important;
             padding-bottom: 20px !important;
             max-width: 654px !important;
             max-height: 200px !important;
             height: 200px !important;
         }
+
         .gm-style-iw-d {
             max-width: 654px !important;
             max-height: 200px !important;
             height: 200px !important;
         }
+
         .gm-style-iw {
             width: 350px !important;
             top: 15px !important;
@@ -29,9 +33,11 @@
             border: 1px solid rgba(72, 181, 233, 0.6);
             border-radius: 2px 2px 10px 10px;
         }
+
         #iw-container {
             margin-bottom: 10px;
         }
+
         #iw-container .iw-title {
             font-family: 'Open Sans Condensed', sans-serif;
             font-size: 15px;
@@ -42,6 +48,7 @@
             margin: 0;
             border-radius: 2px 2px 0 0;
         }
+
         #iw-container .iw-content {
             font-size: 13px;
             line-height: 18px;
@@ -52,31 +59,65 @@
             overflow-y: auto;
             overflow-x: hidden;
         }
+
         .iw-content img {
             float: right;
             margin: 0 5px 5px 10px;
         }
+
         .iw-subTitle {
             font-size: 16px;
             font-weight: 700;
             padding: 5px 0;
         }
+
         .iw-bottom-gradient {
             position: absolute;
             width: 326px;
             height: 25px;
             bottom: 10px;
             right: 18px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-            background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-            background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
-            background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+            background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+            background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+            background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+
+        #home_map {
+            width: 100%;
+            height: 300px;
+            margin: 2% 0 20% 0;
+            text-align: center;
+            border: 5px solid #2e2541;
+            border-radius: 10px
         }
     </style>
 @stop
 
 @section('content')
-    <section id="hospitals" class="container">
+    <section id="partners" class="container">
+
+        <form class="row" style="margin-top: 10%">
+            <div class="col-md-4">
+                <select class="form-control" v-model="type" @change="getPartners">
+                    <option value="">التصنيف</option>
+                    @foreach(\App\Models\Partner::distinct('type')->pluck('type')->toArray() as $type)
+                        <option value="{{ $type }}">{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-control" v-model="city" @change="getPartners">
+                    <option value="">المحافظة</option>
+                    @foreach(\App\Models\Partner::distinct('city')->pluck('city')->toArray() as $city)
+                        <option value="{{ $city }}">{{ $city }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary" @click="getPartners">بحث</button>
+            </div>
+        </form>
         <div class="row">
             <div class="col-xs-12">
                 <div id="home_map"></div>
@@ -108,19 +149,23 @@
             props: ['hospital'],
         });
         new Vue({
-            el: "#hospitals",
+            el: "#partners",
             data: function () {
                 return {
+                    partners: {},
+                    types: [],
                     ids: {},
                     lats: {},
                     lngs: {},
+                    type: '',
+                    city: '',
                     lat: '',
                     lng: '',
                     url: baseUrl + '/hospitals',
                 }
             },
-            mounted() {
-                // this.getHospitals(1);
+            async mounted() {
+                await this.getPartners(1);
             },
             methods: {
                 map: function () {
@@ -293,7 +338,6 @@
 
                     });
 
-                    var icon = "{!! asset('assets/website/images/map-16.png') !!}";
 
                     // Creating a global infoWindow object that will be reused by all markers
                     var infoWindow = new google.maps.InfoWindow();
@@ -303,6 +347,21 @@
                         var x = this;
                         // var address = data.address;
                         latLng = new google.maps.LatLng(this.lats[i], this.lngs[i]);
+                        if (this.types[i] === 'وكيل') {
+                            var icon = "{!! asset('1.png') !!}";
+                        } else if (this.types[i] === 'الجوهرة') {
+                            var icon = "{!! asset('2.png') !!}";
+                        } else if (this.types[i] === 'مرشح') {
+                            var icon = "{!! asset('3.png') !!}";
+                        } else if (this.types[i] === 'مباشر') {
+                            var icon = "{!! asset('4.png') !!}";
+                        } else if (this.types[i] === 'غير مباشر جديد') {
+                            var icon = "{!! asset('5.png') !!}";
+                        } else if (this.types[i] === 'غير مباشر قديم') {
+                            var icon = "{!! asset('6.png') !!}";
+                        } else {
+                            var icon = "{!! asset('7.png') !!}";
+                        }
 
                         // Creating a marker and putting it on the map
                         var marker = new google.maps.Marker({
@@ -312,29 +371,26 @@
                         });
                         id = x.ids[i];
                         // Creating a closure to retain the correct data, notice how I pass the current data in the loop into the closure (marker, data)
-                        (function (marker , id) {
+                        (function (marker, id) {
                             // Attaching a click event to the current marker
                             google.maps.event.addListener(marker, "click", function (e) {
                                 infoWindow.open(map, marker);
-                                x.showHospital(id);
+                                x.showPartner(id);
                             });
 
-                        })(marker,id);
+                        })(marker, id);
                     }
                 },
-                showHospital(id) {
+                showPartner(id) {
                     $.ajax({
-                        url: baseUrl + '/api/hospitals/' + id,
+                        url: baseUrl + '/partners/' + id,
                         type: 'GET',
                     }).then((response) => {
-                        var hospitalImage = response.data.images.length > 0 ? 'uploads/hospitals/'+response.data.images[0].title : 'uploads/hospitals/default.png';
                         var content = ' <div id="iw-container">\n' +
-                            '        <div class="iw-title">'+response.data.name+'</div>\n' +
+                            '        <div class="iw-title">' + response.data.name + '</div>\n' +
                             '        <div class="iw-content">\n' +
-                            '            <div class="iw-subTitle">الوصف</div>\n' +
-                            '          <a href="hospitals/'+response.data.url+'">  <img src="'+hospitalImage+'"\n' +
-                            '                 alt="Porcelain Factory of Vista Alegre" height="115" width="83"></a>\n' +
-                            response.data.description+
+                            '            <div class="iw-subTitle">التصنيف</div>\n' +
+                            response.data.type +
                             '            <div class="iw-subTitle">العنوان</div>\n' +
                             response.data.address +
                             '        </div>\n' +
@@ -342,22 +398,36 @@
                         $(".gm-style-iw-d").html(content);
                     })
                 },
-                getHospitals: function (page) {
+                getPartners: function (page) {
                     let current_page_url;
                     $.ajax({
-                        url: '/api/hospitals/' + '?page=' + page,
+                        url: '/partners' + '?page=' + page,
                         type: 'GET',
-                        data: {is_home : 1},
+                        data: {
+                            type: this.type,
+                            city: this.city,
+                        },
                         complete: function (data) {
                             current_page_url = this.url;
                         },
                     }).then((response) => {
-                        this.lats = response.lats;
-                        this.lngs = response.lngs;
-                        this.ids = response.ids;
+                        this.partners = response.data
+                        this.types = response.data.map(partner => {
+                            return partner.type
+                        });
+                        this.lats = response.data.map(partner => {
+                            return partner.lat
+                        });
+                        this.lngs = response.data.map(partner => {
+                            return partner.lng
+                        });
+                        this.ids = response.data.map(partner => {
+                            return partner.id
+                        });
                         this.lat = response.lat;
                         this.lng = response.lng;
                         this.map();
+
                         x++;
                     })
                 },

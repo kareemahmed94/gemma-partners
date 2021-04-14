@@ -19,6 +19,16 @@ class PartnerSeeder extends Seeder
 
         foreach ($csv_partners as $key => $partner) {
             if ($key > 0) {
+                $date = null;
+                if (isset($partner[1]) && $partner[1] != "") {
+                    $exploaded = explode('/', $partner[1]);
+                    if (is_array($exploaded)) {
+                        $day = (int)$exploaded[1] >= 10 ? $exploaded[1] : (int)'0' . $exploaded[1];
+                        $month = (int)$exploaded[0] >= 10 ? $exploaded[0] : (int)'0' . $exploaded[0];
+                        $year = (int)'20' . $exploaded[2];
+                        $date = $year . '-' . $month . '-' . $day;
+                    }
+                }
                 $data[] = [
                     'name' => $partner[3],
                     'type' => $partner[2],
@@ -28,7 +38,7 @@ class PartnerSeeder extends Seeder
                     'address' => $partner[7],
                     'lat' => $partner[8],
                     'lng' => $partner[9],
-                    'visit_date' => $partner[1] != '' ? $partner[1] : null,
+                    'visit_date' => $date,
                 ];
             }
         }
