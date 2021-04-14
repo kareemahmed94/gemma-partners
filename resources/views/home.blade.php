@@ -2,6 +2,22 @@
 @section('title' , 'Home')
 @section('style')
     <style>
+        section.floating-header {
+            box-shadow: 0 5px 15px 0 rgb(0 0 0 / 30%);
+            background: #fff;
+            position: relative;
+            z-index: 2;
+            height: 40px;
+        }
+
+        section.floating-header.floating-header nav.navbar.navbar-default {
+            background-color: initial;
+            border: 0;
+            font-family: Montserrat-Medium;
+            border-radius: 0;
+            margin-bottom: 10px;
+        }
+
         #map img {
             max-width: none !important;
         }
@@ -85,39 +101,123 @@
 
         #home_map {
             width: 100%;
-            height: 300px;
+            height: 500px;
             margin: 2% 0 20% 0;
             text-align: center;
-            border: 5px solid #2e2541;
+            border: 5px solid #1a1a1a;
             border-radius: 10px
+        }
+
+        .color {
+            float: left;
+            width: 20px;
+            height: 20px;
+            margin: 5px;
+            border: 1px solid rgba(0, 0, 0, .2);
+        }
+
+        .blue {
+            background: #712bb3;
+        }
+
+        .red {
+            background: #a12020;
+        }
+
+        .dark-blue {
+            background: #001520;
+        }
+
+        .dark-grey {
+            background: #171717;
+        }
+
+        .grey-blue {
+            background: #30596f;
+        }
+
+        .brown {
+            background: #605449;
+        }
+
+        .grey {
+            background: #919191;
         }
     </style>
 @stop
 
 @section('content')
     <section id="partners" class="container">
+        <div class="row" style="margin-top: 4%">
+            <div class="col-md-2">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div class="color dark-grey"></div>
+                        وكيل
+                    </li>
+                    <li>
+                        <div class="color red"></div>
+                        الجوهرة
+                    </li>
+                    <li>
+                        <div class="color grey-blue"></div>
+                        مرشح
+                    </li>
 
-        <form class="row" style="margin-top: 10%">
-            <div class="col-md-4">
+                </ul>
+            </div>
+
+            <div class="col-md-2">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div class="color grey"></div>
+                        عميل نقدي
+                    </li>
+                    <li>
+                        <div class="color dark-blue"></div>
+                        مباشر
+                    </li>
+                    <li>
+                        <div class="color brown"></div>
+                        غير مباشر جديد
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div class="color blue"></div>
+                        غير مباشر قديم
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+        <form class="row" style="margin-top: 2%">
+            <div class="col-md-3">
                 <select class="form-control" v-model="type" @change="getPartners">
                     <option value="">التصنيف</option>
-                    @foreach(\App\Models\Partner::distinct('type')->pluck('type')->toArray() as $type)
-                        <option value="{{ $type }}">{{ $type }}</option>
-                    @endforeach
+                    <option :value="option" v-for="option in type_options">@{{ option }}</option>
+
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <select class="form-control" v-model="city" @change="getPartners">
                     <option value="">المحافظة</option>
-                    @foreach(\App\Models\Partner::distinct('city')->pluck('city')->toArray() as $city)
-                        <option value="{{ $city }}">{{ $city }}</option>
-                    @endforeach
+                        <option :value="option" v-for="option in city_options">@{{ option }}</option>
                 </select>
             </div>
-            <div class="col-md-4">
-                <button type="button" class="btn btn-primary" @click="getPartners">بحث</button>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-dark" @click="getPartners">بحث</button>
             </div>
+
         </form>
+        <div class="text-center" style="margin-top: 2%" v-if="loading">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-xs-12">
                 <div id="home_map"></div>
@@ -154,11 +254,14 @@
                 return {
                     partners: {},
                     types: [],
+                    type_options: [],
+                    city_options: [],
                     ids: {},
                     lats: {},
                     lngs: {},
                     type: '',
                     city: '',
+                    loading: false,
                     lat: '',
                     lng: '',
                     url: baseUrl + '/hospitals',
@@ -398,19 +501,18 @@
                         $(".gm-style-iw-d").html(content);
                     })
                 },
-                getPartners: function (page) {
-                    let current_page_url;
+                getPartners: function () {
+                    this.loading = true
                     $.ajax({
-                        url: '/partners' + '?page=' + page,
+                        url: '/partners',
                         type: 'GET',
                         data: {
                             type: this.type,
                             city: this.city,
-                        },
-                        complete: function (data) {
-                            current_page_url = this.url;
-                        },
+                        }
                     }).then((response) => {
+                        this.type_options = response.types
+                        this.city_options = response.cities
                         this.partners = response.data
                         this.types = response.data.map(partner => {
                             return partner.type
@@ -427,6 +529,7 @@
                         this.lat = response.lat;
                         this.lng = response.lng;
                         this.map();
+                        this.loading = false
 
                         x++;
                     })

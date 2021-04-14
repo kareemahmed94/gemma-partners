@@ -1,5 +1,5 @@
 <!-- Footer -->
-<footer class="bg-light text-center text-lg-start">
+<footer class="bg-light text-center text-lg-start" style="background-color: #b7b7b7!important;">
     <!-- Grid container -->
     <div class="container p-4">
         <!--Grid row-->
@@ -12,9 +12,9 @@
     <!-- Grid container -->
 
     <!-- Copyright -->
-    <div class="text-center p-3" style="background-color: #2e2541">
+    <div class="text-center p-3" style="background-color: #1a1a1a;color: white">
         © 2021 Copyright:
-        <a class="text-dark" href="#">Gemma Partners</a>
+        <a  href="#" style="color: white">Gemma Partners</a>
     </div>
     <!-- Copyright -->
 </footer>

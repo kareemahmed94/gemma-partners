@@ -14,18 +14,22 @@ class PartnerController extends Controller
         $lat = $data->latitude;
         $lng = $data->longitude;
         $partners = Partner::latest('id');
+        $types = Partner::distinct('type');
+        $cities = Partner::distinct('city');
         if ($request->input('type')) {
             $partners = $partners->where('type' , $request->input('type'));
+            $cities = Partner::where('type' , $request->input('type'))->distinct('city');
         }
         if ($request->input('city')) {
             $partners = $partners->where('city' , $request->input('city'));
         }
         $partners = $partners->get();
-        return response()->json(['status' => 200 , 'data' => $partners , 'lat' => $lat , 'lng' => $lng]);
+        return response()->json(['status' => 200 , 'data' => $partners , 'lat' => $lat , 'lng' => $lng,
+            'types' => $types->pluck('type'), 'cities' => $cities->pluck('city') ]);
     }
     public function show($id)
     {
         $partner = Partner::find($id);
-        return response()->json(['status' => 200 , 'data' => $partner ]);
+        return response()->json(['status' => 200 , 'data' => $partner]);
     }
 }
