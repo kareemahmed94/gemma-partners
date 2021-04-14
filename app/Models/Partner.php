@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Partner extends Model
 {
     use HasFactory;
+    protected $casts = [
+        'visit_date' => 'date'
+    ];
 }

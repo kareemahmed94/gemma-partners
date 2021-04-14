@@ -23,7 +23,7 @@ class CreatePartnersTable extends Migration
             $table->longText('address')->nullable();
             $table->longText('lat')->nullable();
             $table->longText('lng')->nullable();
-            $table->longText('visit_date')->nullable();
+            $table->date('visit_date')->nullable();
             $table->timestamps();
         });
     }
