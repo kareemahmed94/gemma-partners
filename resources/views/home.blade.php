@@ -59,7 +59,7 @@
             font-size: 15px;
             font-weight: 400;
             padding: 10px;
-            background-color: #4e3176;
+            background-color: #1a1a1a;
             color: white;
             margin: 0;
             border-radius: 2px 2px 0 0;
@@ -147,6 +147,7 @@
 @stop
 
 @section('content')
+
     <section id="partners" class="container">
         <div class="row" style="margin-top: 4%">
             <div class="col-md-2">
@@ -244,10 +245,6 @@
             '</div>';
         let x = 0;
         let baseUrl = "{!! url('/') !!}";
-        Vue.component('hospital', {
-            template: '#data-container',
-            props: ['hospital'],
-        });
         new Vue({
             el: "#partners",
             data: function () {
@@ -488,6 +485,9 @@
                     $.ajax({
                         url: baseUrl + '/partners/' + id,
                         type: 'GET',
+                        data: {
+                            _token: "{!! csrf_token() !!}"
+                        }
                     }).then((response) => {
                         var content = ' <div id="iw-container">\n' +
                             '        <div class="iw-title">' + response.data.name + '</div>\n' +
@@ -507,6 +507,7 @@
                         url: '/partners',
                         type: 'GET',
                         data: {
+                            _token: "{!! csrf_token() !!}",
                             type: this.type,
                             city: this.city,
                         }
