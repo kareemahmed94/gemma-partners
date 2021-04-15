@@ -267,6 +267,7 @@
             async mounted() {
                 await this.getPartners(1);
             },
+            
             methods: {
                 map: function () {
                     // Creating a new map
@@ -483,7 +484,7 @@
                 },
                 showPartner(id) {
                     $.ajax({
-                        url: baseUrl + '/partners/' + id,
+                        url: '/partners/' + id,
                         type: 'GET',
                         data: {
                             _token: "{!! csrf_token() !!}"
