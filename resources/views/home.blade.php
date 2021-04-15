@@ -2,6 +2,12 @@
 @section('title' , 'Home')
 @section('style')
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap');
+    </style>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
         section.floating-header {
             box-shadow: 0 5px 15px 0 rgb(0 0 0 / 30%);
             background: #fff;
@@ -52,10 +58,10 @@
 
         #iw-container {
             margin-bottom: 10px;
+            font-family: 'Cairo', sans-serif;
         }
 
         #iw-container .iw-title {
-            font-family: 'Open Sans Condensed', sans-serif;
             font-size: 15px;
             font-weight: 400;
             padding: 10px;
@@ -267,7 +273,7 @@
             async mounted() {
                 await this.getPartners(1);
             },
-            
+
             methods: {
                 map: function () {
                     // Creating a new map
@@ -493,11 +499,15 @@
                         var content = ' <div id="iw-container">\n' +
                             '        <div class="iw-title">' + response.data.name + '</div>\n' +
                             '        <div class="iw-content">\n' +
-                            '            <div class="iw-subTitle">التصنيف</div>\n' +
-                            response.data.type +
-                            '            <div class="iw-subTitle">العنوان</div>\n' +
-                            response.data.address +
-                            '        </div>\n' +
+                            '            <div class="iw-subTitle">التصنيف : ' +
+                            '<span> '+response.data.type+' </span></div>' +
+                            '            <div class="iw-subTitle">المدينة : ' +
+                            '<span> '+response.data.city+' </span></div>' +
+                            '            <div class="iw-subTitle">المنطقة : ' +
+                            '<span> '+response.data.area+' </span></div>' +
+                            '            <div class="iw-subTitle">العنوان : ' +
+                            '<span> '+response.data.address+' </span></div>' +
+                            '        </div>' +
                             '    </div>';
                         $(".gm-style-iw-d").html(content);
                     })
